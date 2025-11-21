@@ -22,6 +22,7 @@ with open("../data/t10k-labels-idx1-ubyte.gz", "rb") as f:
 
 test_y = test_y[8:]
 
+
 # print(sys.argv)
 
 SVERILOG_BATCH_COUNT = 100
@@ -33,9 +34,13 @@ MAX_MULT_OUTPUT = 2**16 - 1
 
 acc = 0
 
+
 error = []
 exact_outputs = []
 for i in range(0, SVERILOG_BATCH_COUNT):
+    print(test_y[i])
+    
+    
     predictions_bin_approx = []
     with open(
         ROOT_DIR
@@ -44,7 +49,11 @@ for i in range(0, SVERILOG_BATCH_COUNT):
         predictions_bin_approx = pfile.readlines()
 
     predictions_approx = twoscomp_to_decimal(predictions_bin_approx, 8)
-
+    
+    print("predictions_approx:", predictions_approx)
+    print("argmax:", predictions_approx.argmax())
+    print("Max value:", np.max(predictions_approx))
+    
     if predictions_approx.argmax() == test_y[i]:
         acc += 1
 
@@ -60,17 +69,19 @@ for i in range(0, SVERILOG_BATCH_COUNT):
     curr_mac = 0
     curr_exact = 0
     for j in range(len(predictions_approx)):
-        curr_mac += (predictions_approx[j].astype(np.int32) - predictions_exact[j].astype(np.int32))
-        curr_exact += predictions_exact[j].astype(np.int32)
+        curr_mac += (predictions_approx[j] - predictions_exact[j])
+        curr_exact += predictions_exact[j]
         
-    error.append(abs(curr_mac))
+    error.append((curr_mac))
     exact_outputs.append(curr_exact)
     
+
+
 print("Avg Error: ", np.mean(np.array(error)))
 print("Max Error: ", np.max(np.array(error)))
 print("Max Exact Output: ", np.max(np.array(exact_outputs)))
-print("NMED: ", np.mean(np.array(error)) / np.max(np.array(exact_outputs)))
+
+
+print("NMED: ", np.mean(np.array(np.abs(error))) / np.max(np.array(exact_outputs)))
 
 print("Acc: ", acc * 100 / SVERILOG_BATCH_COUNT)
-
-print(1/96 * 100)
