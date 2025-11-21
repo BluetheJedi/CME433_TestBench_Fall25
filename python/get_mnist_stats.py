@@ -10,6 +10,7 @@ def twoscomp_to_decimal(inarray, bits_in_word):
             inputs.append(int(bin_input, 2))
         else:
             inputs.append(int(bin_input, 2) - (1 << bits_in_word))
+    
     inputs = np.array(inputs)
     return inputs
 
@@ -28,19 +29,48 @@ SVERILOG_BATCH_SIZE = 1
 ROOT_DIR = "../results/"
 SVERILOG_FINAL_LAYER = 2
 VERSION = sys.argv[1]
+MAX_MULT_OUTPUT = 2**16 - 1
 
 acc = 0
+
+error = []
+exact_outputs = []
 for i in range(0, SVERILOG_BATCH_COUNT):
-    predictions_bin = []
+    predictions_bin_approx = []
     with open(
         ROOT_DIR
         + "mult{}_{}in_layer{}_out.txt".format(VERSION, i, SVERILOG_FINAL_LAYER)
     ) as pfile:
-        predictions_bin = pfile.readlines()
+        predictions_bin_approx = pfile.readlines()
 
-    predictions = twoscomp_to_decimal(predictions_bin, 8)
+    predictions_approx = twoscomp_to_decimal(predictions_bin_approx, 8)
 
-    if predictions.argmax() == test_y[i]:
+    if predictions_approx.argmax() == test_y[i]:
         acc += 1
 
+    predictions_bin_exact = []
+    with open(
+        ROOT_DIR
+        + "mult{}_{}in_layer{}_out.txt".format("exact", i, SVERILOG_FINAL_LAYER)
+    ) as pfile_exact:
+        predictions_bin_exact = pfile_exact.readlines()
+
+    predictions_exact = twoscomp_to_decimal(predictions_bin_exact, 8)
+
+    curr_mac = 0
+    curr_exact = 0
+    for j in range(len(predictions_approx)):
+        curr_mac += (predictions_approx[j].astype(np.int32) - predictions_exact[j].astype(np.int32))
+        curr_exact += predictions_exact[j].astype(np.int32)
+        
+    error.append(abs(curr_mac))
+    exact_outputs.append(curr_exact)
+    
+print("Avg Error: ", np.mean(np.array(error)))
+print("Max Error: ", np.max(np.array(error)))
+print("Max Exact Output: ", np.max(np.array(exact_outputs)))
+print("NMED: ", np.mean(np.array(error)) / np.max(np.array(exact_outputs)))
+
 print("Acc: ", acc * 100 / SVERILOG_BATCH_COUNT)
+
+print(1/96 * 100)

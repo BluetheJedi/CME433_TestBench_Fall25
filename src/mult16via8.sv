@@ -8,7 +8,7 @@ module mult16bvia8bit (
   logic signed [15:0] ouP[0:3];
 
   ///////////////////////////// Instantiate your multiplier here ///////////////////////////////////////
-  exact_mult mult (
+  hlr_bm2 mult (
       .i_a(inA[0]),
       .i_b(inB[0]),
       .o_z(ouP[0])
@@ -19,7 +19,7 @@ module mult16bvia8bit (
   generate
     ;
     for (i = 1; i < 4; i = i + 1) begin : base
-      exact_mult mult (
+      hlr_bm2 mult (
           .i_a(inA[i]),
           .i_b(inB[i]),
           .o_z(ouP[i])
