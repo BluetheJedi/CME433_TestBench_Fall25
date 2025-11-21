@@ -66,12 +66,7 @@ This will run the dc analysis for the sample exact multiplier provided in this r
 1. Record the Accuracy values for Section D, and NMED for the last layer. Here you will record a total of 2 metrics: 1 Accuracy, 1 NMED_last_layer
 1. Write your own testbench to generate the NMED of your multiplier for all possible input values. Here you will record 1 metric: NMED_all_possible_inputs.
 
-<!-- 
-## G: EE800 Students
-1. The floating point inputs and weights are provided in "data/EE800data" folder.
-2. A sample model is given in "python/float_mnist_model.py".
-3. You can run the sample model by moving to the python folder and make sure that numpy is installed in your python environment.
-4. Run the following command to generate accuracy stats: `python float_mnist_model`
-5. You should see the following output: `Accuracy: 0.962`
-6. You will have modify the provided testbench for your multiplier and posit format. You can convert the provided .txt files (from Step#1) directly to posit and feed into the testbench.  -->
+
+## Additional Info:
+    You will have to create the results/ folder and place it in the root dir of this project, then all should run fine.
 
