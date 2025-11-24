@@ -79,7 +79,7 @@ initial begin
     #1;
 
 
-    $display("NMED: %e", mean/max_exact);
+    $display("NMED over all possible 8-bit values: %e", mean/max_exact);
     #1;
     $finish;
 end
