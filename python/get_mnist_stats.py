@@ -37,10 +37,7 @@ acc = 0
 
 error = []
 exact_outputs = []
-for i in range(0, SVERILOG_BATCH_COUNT):
-    print(test_y[i])
-    
-    
+for i in range(0, SVERILOG_BATCH_COUNT):    
     predictions_bin_approx = []
     with open(
         ROOT_DIR
@@ -50,38 +47,53 @@ for i in range(0, SVERILOG_BATCH_COUNT):
 
     predictions_approx = twoscomp_to_decimal(predictions_bin_approx, 8)
     
-    print("predictions_approx:", predictions_approx)
-    print("argmax:", predictions_approx.argmax())
-    print("Max value:", np.max(predictions_approx))
-    
     if predictions_approx.argmax() == test_y[i]:
         acc += 1
 
-    predictions_bin_exact = []
-    with open(
-        ROOT_DIR
-        + "mult{}_{}in_layer{}_out.txt".format("exact", i, SVERILOG_FINAL_LAYER)
-    ) as pfile_exact:
-        predictions_bin_exact = pfile_exact.readlines()
-
-    predictions_exact = twoscomp_to_decimal(predictions_bin_exact, 8)
-
-    curr_mac = 0
-    curr_exact = 0
-    for j in range(len(predictions_approx)):
-        curr_mac += (predictions_approx[j] - predictions_exact[j])
-        curr_exact += predictions_exact[j]
-        
-    error.append((curr_mac))
-    exact_outputs.append(curr_exact)
+    
     
 
+for layer in range(0, SVERILOG_FINAL_LAYER+1):
+    for i in range(0, SVERILOG_BATCH_COUNT):
+        
+        
+        predictions_bin_approx = []
+        with open(
+            ROOT_DIR
+            + "mult{}_{}in_layer{}_out.txt".format(VERSION, i, layer)
+        ) as pfile:
+            predictions_bin_approx = pfile.readlines()
 
-print("Avg Error: ", np.mean(np.array(error)))
-print("Max Error: ", np.max(np.array(error)))
-print("Max Exact Output: ", np.max(np.array(exact_outputs)))
+        predictions_approx = twoscomp_to_decimal(predictions_bin_approx, 8)
+        
+        # print("predictions_approx:", predictions_approx)
+        # print("argmax:", predictions_approx.argmax())
+        # print("Max value:", np.max(predictions_approx))
+        
+        predictions_bin_exact = []
+        with open(
+            ROOT_DIR
+            + "mult{}_{}in_layer{}_out.txt".format("exact", i, layer)
+        ) as pfile_exact:
+            predictions_bin_exact = pfile_exact.readlines()
+
+        predictions_exact = twoscomp_to_decimal(predictions_bin_exact, 8)
+
+        curr_mac = 0
+        curr_exact = 0
+        for j in range(len(predictions_approx)):
+            curr_mac += (predictions_approx[j] - predictions_exact[j])
+            curr_exact += predictions_exact[j]
+            
+        error.append((curr_mac))
+        exact_outputs.append(curr_exact)
+        
+
+    print("For Layer:", layer)
+
+    nmed = np.mean(np.array(np.abs(error))) / np.max(np.array(exact_outputs))
+    print(f"NMED: {nmed:e}")
 
 
-print("NMED: ", np.mean(np.array(np.abs(error))) / np.max(np.array(exact_outputs)))
 
 print("Acc: ", acc * 100 / SVERILOG_BATCH_COUNT)
