@@ -57,7 +57,7 @@ initial begin
             #1;
             // #1;
 
-            //if (diff < 0) diff <= prod_exact - prod_hlr;
+            if (diff < 0) diff <= prod_exact - prod_hlr;
 
             #1;
             // #1;
@@ -68,9 +68,6 @@ initial begin
 
         end
     end
-
-    if (diff_sum < 0) diff_sum <= diff_sum * -1;
-
 
     #1;
   

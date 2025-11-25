@@ -82,7 +82,7 @@ for layer in range(0, SVERILOG_FINAL_LAYER+1):
         curr_mac = 0
         curr_exact = 0
         for j in range(len(predictions_approx)):
-            curr_mac += (predictions_approx[j] - predictions_exact[j])
+            curr_mac += abs(predictions_approx[j] - predictions_exact[j])
             curr_exact += predictions_exact[j]
             
         error.append((curr_mac))
@@ -91,7 +91,7 @@ for layer in range(0, SVERILOG_FINAL_LAYER+1):
 
     print("For Layer:", layer)
 
-    nmed = np.mean(np.array(np.abs(error))) / np.max(np.array(exact_outputs))
+    nmed = np.mean(np.array((error))) / np.max(np.array(exact_outputs))
     print(f"NMED: {nmed:e}")
 
 
