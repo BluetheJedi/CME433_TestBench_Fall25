@@ -17,4 +17,4 @@
     - Open up a terminal in the main project folder, and run "./make_easy.csh hlr_bm2_mod"
 
 ### To get the exact_mult stats:
-    - Steps match provided steps.
+    - Steps match initially provided steps
