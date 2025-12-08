@@ -12,7 +12,7 @@ real diff_sum;
 
 logic signed [15:0] diff;
 
-real mean =0.1;
+real mean = 0.1;
 
 
 logic signed [15:0] max_exact;
@@ -26,10 +26,10 @@ exact_mult e_mult (
     .o_z(prod_exact)
 );
 
-hlr_bm2 bm2_mult (
-    .i_a(x),
-    .i_b(y),
-    .o_z(prod_hlr)
+hlr_bm1 bm2_mult (
+    .x(x),
+    .y(y),
+    .prod(prod_hlr)
 );
 
 
@@ -50,7 +50,7 @@ initial begin
 
             #1;
             if (prod_exact > max_exact) max_exact <= prod_exact;
-            
+
 
             diff <= prod_hlr - prod_exact;
 
@@ -61,7 +61,7 @@ initial begin
 
             #1;
             // #1;
-            
+
 
             diff_sum <= (diff_sum + diff);
 
@@ -70,15 +70,16 @@ initial begin
     end
 
     #1;
-  
+
 
     mean <= diff_sum/count;
     #1;
 
-
+    $display("-------------------------------------------------------------------");
     $display("NMED over all possible 8-bit values: %e", mean/max_exact);
+    $display("-------------------------------------------------------------------");
     #1;
     $finish;
 end
-    
+
 endmodule

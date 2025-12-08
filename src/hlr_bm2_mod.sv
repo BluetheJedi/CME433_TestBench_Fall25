@@ -1,4 +1,4 @@
-module hlr_bm2(
+module hlr_bm2_mod(
     input  signed [7:0] x,   // multiplier
     input  signed [7:0] y,   // multiplicand
     output signed [15:0] prod
@@ -62,25 +62,24 @@ module hlr_bm2(
     endfunction
 
 
-    function automatic signed [16:0] full_add(
-        input signed [16:0] a,
-        input signed [16:0] b
-    );
-        reg        carry;
-        reg [16:0] s;
-        integer    i;
-        begin
-            carry = 1'b0;
+    function automatic signed [16:0] approx_add_lsb_nocarry(
+      input signed [16:0] a,
+      input signed [16:0] b
+      );
+      reg        carry;
+      reg [16:0] s;
+      integer    i;
+      begin
+          s[3:0] = a[3:0] ^ b[3:0];
 
-            for (i = 0; i < 17; i = i + 1) begin
-                s[i]  = a[i] ^ b[i] ^ carry;
-                carry = (a[i] & b[i]) |
-                        (a[i] & carry) |
-                        (b[i] & carry);
-            end
+          carry = 1'b0;
+          for (i = 4; i < 17; i = i + 1) begin
+              s[i]   = a[i] ^ b[i] ^ carry;
+              carry  = (a[i] & b[i]) | (a[i] & carry) | (b[i] & carry);
+          end
 
-            full_add = s;
-        end
+          approx_add_lsb_nocarry = s;
+      end
     endfunction
 
 
@@ -90,9 +89,9 @@ module hlr_bm2(
     wire signed [16:0] pp2 = r4_booth_encoder(grp2, y) << 6;
 
 
-    wire signed [16:0] sum_tmp = full_add(pp0, pp1);
+    wire signed [16:0] sum_tmp = approx_add_lsb_nocarry(pp0, pp1);
 
-    wire signed [16:0] sum_pp = full_add(sum_tmp, pp2);
+    wire signed [16:0] sum_pp = approx_add_lsb_nocarry(sum_tmp, pp2);
 
     assign prod = sum_pp[15:0];
 

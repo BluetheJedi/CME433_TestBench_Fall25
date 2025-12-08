@@ -1,4 +1,4 @@
-module hlr_bm2(
+module hlr_bm1(
     input  signed [7:0] x,   // multiplier
     input  signed [7:0] y,   // multiplicand
     output signed [15:0] prod
@@ -50,10 +50,8 @@ module hlr_bm2(
                 4'b1110, 4'b1101: result = -$signed({{8{m[7]}}, m});       // -1C
 
                 //R8ABE2 approx for +/- 3C omissions
-                4'b0101: result = $signed({{7{m[7]}}, m, 1'b0});  // +3 -> +2
-                4'b1010: result = -$signed({{7{m[7]}}, m, 1'b0}); // -3 -> -2
-                4'b0110: result = $signed({{6{m[7]}}, m, 2'b00}); // +3 -> +4
-                4'b1001: result = -$signed({{6{m[7]}}, m, 2'b00}); // -3 -> -4
+                4'b0101, 4'b0110: result = $signed({{7{m[7]}}, m, 1'b0});  // +3 -> +2
+                4'b1010, 4'b1001: result = -$signed({{7{m[7]}}, m, 1'b0}); // -3 -> -2
 
                 default: result = 16'sd0;
             endcase
