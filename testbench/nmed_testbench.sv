@@ -26,7 +26,7 @@ exact_mult e_mult (
     .o_z(prod_exact)
 );
 
-hlr_bm1 bm2_mult (
+hlr_bm2_mod bm2_mult (
     .x(x),
     .y(y),
     .prod(prod_hlr)
